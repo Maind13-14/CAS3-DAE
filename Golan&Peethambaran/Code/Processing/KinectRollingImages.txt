@@ -1,3 +1,4 @@
+//Libraries for sound (Minim Library)
 import ddf.minim.spi.*;
 import ddf.minim.signals.*;
 import ddf.minim.*;
@@ -5,9 +6,12 @@ import ddf.minim.analysis.*;
 import ddf.minim.ugens.*;
 import ddf.minim.effects.*;
 
+//Library for Kinect
 import SimpleOpenNI.*;
+
 int[] depthValues;
 
+//Context variable for accessing Kinect
 SimpleOpenNI  context;
 
 
@@ -34,10 +38,14 @@ int kinectDepth=480;
 PImage maskImage;
 PImage bg;
 
+int numberDrops=0;
+
 void setup()
 {
   size(1024, 768, P2D);
   noCursor();
+
+  //Initially context and checking connection for the kinect
   context = new SimpleOpenNI(this);
   if (context.isInit() == false)
   {
@@ -51,6 +59,8 @@ void setup()
 
   // enable depthMap generation 
   context.enableDepth();
+
+  //MaskImage to blacken out everything behind n meters
   maskImage  = createImage(640, 480, RGB);
 
   displaycols=kinectWidth/cellSize;
@@ -77,8 +87,11 @@ void draw()
   // update the cam
   context.update();
 
+  //Reading depth values to create mask
   depthValues = context.depthMap();
   maskImage.loadPixels();
+
+  //Creating the mask on the Kinect depth image
   for (int pic = 0; pic < depthValues.length; pic++)
     if ( depthValues[pic] < maxDistance)
       // IN RANGE: WHITE PIXEL
@@ -107,7 +120,7 @@ void draw()
 
 void dropImage(PImage img)
 {
-
+  //Starting from the last row of the picture (displayRows-1) and reducing one at a time and then waiting for few blank rows and then loading again
   if (count==0)
   { 
     flag++;
@@ -120,12 +133,17 @@ void dropImage(PImage img)
   else
     count--;
 
-  if (count==40)
+  if (count==displayrows-35)
   {
-    splash.play();
-    splash.rewind();
+    if (numberDrops==1)
+    {
+      splash.play();
+      splash.rewind();
+      numberDrops=0;
+    }
   }
 
+  //Checking the value of the pixels in each row
   if (flag==0) {
     for (int i = 0; i < displaycols;i++) {
 
@@ -151,11 +169,11 @@ void dropImage(PImage img)
   else
   {
     for (int i = 0; i < displaycols;i++) {
-       img1[i][0]=0;
+      img1[i][0]=0;
     }
   }
 
-
+  //Displaying each pixel on the screen
   for (int j = displayrows-1; j >0;j--) {
     for (int i = 0; i <displaycols;i++) {
       // Begin loop for rows
@@ -168,10 +186,10 @@ void dropImage(PImage img)
       {
         rect(x, y+j*j*0.3, cellSize2/6, cellSize/6+0.03*j*j);
         //rect(x+4.3, y+j*j*0.3, cellSize2/6, cellSize2/6+0.03*j*j);
+        numberDrops=1;
       }
 
       img1[i][j]=img1[i][j-1];
     }
   }
 }
-

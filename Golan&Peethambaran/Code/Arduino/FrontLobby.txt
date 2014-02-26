@@ -1,3 +1,4 @@
+//The output pins used on the Leonardo. 8 as there as there 8 rows of LEDs
 int output1 = 1;
 int output2 = 2;
 int output3 = 3;
@@ -7,6 +8,7 @@ int output6 = 6;
 int output7 = 7;
 int output8 = 9;
 
+//The sequence of output for each of the rows of the LEDs
 int out1[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
 int out2[] = {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0};
 int out3[] = {0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
@@ -18,6 +20,7 @@ int out8[] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0};
 
 void setup() {
 
+  //Configuring the pin as output pins
   pinMode(output1, OUTPUT);
   pinMode(output2, OUTPUT);
   pinMode(output3, OUTPUT);
@@ -31,6 +34,7 @@ void setup() {
 
 void loop() {
 
+  //Loop for writing each of the output to the rows of LED
   for (int i = 0; i < 17; i++)
   {
     digitalWrite(output1, out1[i]);
@@ -48,6 +52,8 @@ void loop() {
     digitalWrite(output7, out7[i]);
 
     digitalWrite(output8, out8[i]);
+    
+    //Change in delay depending on the water to fake the effect of gravity
     if (i <= 8) {
       delay((16 - i) * 2);
     } else {
